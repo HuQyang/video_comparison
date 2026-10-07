@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>三视频质量盲评</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><a class="brand" href="./"><span class="logo">Ⅲ</span><span>VIDEO STUDY<small>三视频质量盲评</small></span></a><label>标注者 <input id="rater" placeholder="姓名或匿名编号" maxlength="80"></label><span id="save-status" role="status">进度保存在本机</span></header>
+<main>
+<section class="heading"><div><div class="eyebrow">HUMAN EVALUATION / 人工评估</div><h1>观看、对比，选出更好的视频。</h1><p>结合各自的 prompt，比较画面质量、运动自然度和内容一致性。每组选出一个最佳视频，或选择无法区分。</p></div><div class="counter"><strong id="count">0 / 0</strong><span>已完成</span></div></section>
+<div class="progress"><span id="progress"></span></div>
+<div class="workspace"><aside><div class="rail-title">对比组 <span id="group-count"></span></div><nav id="groups" aria-label="选择对比组"></nav><div class="privacy">盲评模式<br><span>视频顺序随机，模型名称隐藏。答案仅保存在当前浏览器，请导出并交给研究者。</span></div></aside>
+<section class="study"><div class="study-top"><div><span class="eyebrow" id="position"></span><h2 id="group-title"></h2></div><div class="play-tools"><button id="play-all">▶ 从头播放全部</button><button id="pause-all">暂停全部</button></div></div><p id="media-status" role="status"></p><div id="cards" class="cards"></div>
+<fieldset class="decision"><legend>哪个视频的整体质量更好？</legend><p>点击视频下方的按钮选择，确认后保存这一组的答案。</p><label class="tie"><input type="radio" name="winner" value="tie"> 无明显差异 / 无法区分</label><label class="note">备注（选填）<textarea id="note" placeholder="例如：画面清晰，但镜头运动不自然…" maxlength="2000"></textarea></label><div class="action-row"><button id="previous">← 上一组</button><span id="answer-status" role="status" aria-live="polite"></span><button id="next" class="primary" disabled>保存并继续 →</button></div></fieldset>
+<section id="complete" hidden class="complete"><h2>全部标注已完成 ✓</h2><p>请下载结果并交给研究者。你也可以返回任意对比组修改答案，再重新导出。</p></section>
+</section></div>
+<footer><span id="study-name"></span><div><button id="json">下载 JSON</button><button id="csv">下载 CSV</button><button id="copy">复制 JSON</button><button id="reset" class="quiet">重新开始</button></div></footer>
+<p id="export-status" role="status" aria-live="polite"></p>
+</main><script type="module" src="app.js"></script>
+</body></html>
