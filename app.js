@@ -25,7 +25,9 @@ function render() {
   $('group-count').textContent = config.groups.length;
   $('progress').style.width = `${completed / config.groups.length * 100}%`;
   $('position').textContent = `COMPARISON ${String(session.cursor + 1).padStart(2, '0')} / ${session.order.length}`;
-  $('group-title').textContent = g.title || `对比组 ${session.cursor + 1}`;
+  const displayNumber = String(session.cursor + 1).padStart(2, '0');
+  const detail = (g.title || '').replace(/^对比组\s*\d+\s*(?:[·:：-]\s*)?/, '').trim();
+  $('group-title').textContent = `对比组 ${displayNumber}${detail ? ` · ${detail}` : ''}`;
   $('study-name').textContent = `${config.title} · v${config.version}`;
   $('complete').hidden = completed !== config.groups.length;
   $('groups').replaceChildren(...session.order.map((id, i) => {
