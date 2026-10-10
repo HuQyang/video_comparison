@@ -1,12 +1,24 @@
 import {config} from './study-config.js';
-import {validateConfig,createSession,validSession,labelKey,results,toCsv} from './model.js';
+import {validateConfig,createSession,validSession,mergeSession,labelKey,results,toCsv} from './model.js';
 import {schemaVersion,questions,details,completeLabel} from './schema.js';
 const $=id=>document.getElementById(id);
 validateConfig(config);
-const oldKey=`video-comparison:${config.id}:${config.version}`,key=`${oldKey}:labels-v${schemaVersion}`;
+// One save slot per study id, independent of config.version, so labels survive groups being added.
+const oldKey=`video-comparison:${config.id}:${config.version}`,key=`video-comparison:${config.id}:labels-v${schemaVersion}`;
 let session;
-try {const saved=JSON.parse(localStorage.getItem(key));if(validSession(saved,config))session=saved;}catch{}
+try {
+ let saved=JSON.parse(localStorage.getItem(key));
+ if (!saved) {  // first visit after this change: pick up the newest per-version save of this study
+  const prefix=`video-comparison:${config.id}:`, suffix=`:labels-v${schemaVersion}`;
+  const old=Object.keys(localStorage).filter(k=>k.startsWith(prefix)&&k.endsWith(suffix)&&k!==key)
+   .sort((a,b)=>Number(a.slice(prefix.length,-suffix.length))-Number(b.slice(prefix.length,-suffix.length))).pop();
+  if (old) saved=JSON.parse(localStorage.getItem(old));
+ }
+ if (saved && !validSession(saved,config)) saved=mergeSession(saved,config);
+ if (validSession(saved,config)) session=saved;
+} catch {}
 session ||= createSession(config);
+try {localStorage.setItem(key,JSON.stringify(session));} catch {}
 let activeQ=0,startedAt=Date.now(),rate=1;
 const group=()=>config.groups.find(g=>g.id===session.order[session.cursor]);
 const item=()=>group().videos.find(v=>v.id===session.videoOrder[group().id][session.active]);
