@@ -1,7 +1,7 @@
 // 由 make_study_config.py 自动生成，不要手改；重新运行脚本即可更新。
 // 每组是同一模型、同一 prompt_id、同一 seed 下三个提示词版本的视频。
 export const config = {
-  id: 'geot2v-prompt-pilot-v1-2', version: '7', title: 'GeoT2V 提示词三版对比',
+  id: 'geot2v-prompt-pilot-v1-2', version: '7', title: 'GeoT2V 提示词三版对比', title_en: 'GeoT2V three prompt versions',
   groups: [
     { id: "cogvideox-2b__S01_orbit_large__seed0", title: "对比组 01 · CogVideoX-2B · S01_orbit_large · seed 0", videos: [
       { id: "cogvideox-2b__S01_orbit_large__seed0-a", src: "videos/cogvideox-2b__S01_orbit_large__seed0__a.mp4", prompt: "Orbit 90 degrees clockwise around the blocks, keeping it centered and maintaining about the same distance and height. A stack of colorful wooden geometric blocks on a low table, with a studio shelf behind it. Objects remain still under steady lighting. Single continuous shot; fixed focal length.", method: "v1.1 原版" },
