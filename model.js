@@ -17,20 +17,28 @@ export function shuffle(items) {
   for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
   return out;
 }
+// GeCo development groups (ids "geco__…") are not a prompt comparison: they always sit together after the comparison
+// groups, in config order (model, then camera action), with their videos unshuffled, so raters can pick them out.
+const isGeco = id => id.startsWith('geco__');
+const ordered = (config, ids) => config.groups.map(g=>g.id).filter(id=>ids.has(id));
+const videoIds = g => isGeco(g.id) ? g.videos.map(v=>v.id) : shuffle(g.videos.map(v=>v.id));
 export function createSession(config) {
+ const ids=config.groups.map(g=>g.id);
  return { schemaVersion, snapshot:JSON.stringify(config), id:crypto.randomUUID(), rater:'', createdAt:new Date().toISOString(), cursor:0, active:0,
- order:shuffle(config.groups.map(g=>g.id)), videoOrder:Object.fromEntries(config.groups.map(g=>[g.id,shuffle(g.videos.map(v=>v.id))])), labels:{}, metadata:{} };
+ order:[...shuffle(ids.filter(id=>!isGeco(id))),...ids.filter(isGeco)], videoOrder:Object.fromEntries(config.groups.map(g=>[g.id,videoIds(g)])), labels:{}, metadata:{} };
 }
 export const labelKey = (groupId,videoId) => JSON.stringify([groupId,videoId]);
 // Carry a session over to a newer config (groups added as generation progresses): labels, rater, submission id and
-// the order of groups already seen are kept; new groups are appended in random order after them.
+// the order of comparison groups already seen are kept; new comparison groups follow in config order (not shuffled,
+// so positions of labelled groups never move), then all GeCo groups in config order.
 export function mergeSession(s,config) {
  if (!s || s.schemaVersion!==schemaVersion || typeof s.id!=='string' || !s.labels || !Array.isArray(s.order)) return null;
  const byId=new Map(config.groups.map(g=>[g.id,g]));
- const kept=s.order.filter((id,i)=>byId.has(id) && s.order.indexOf(id)===i);
- const order=[...kept,...shuffle(config.groups.map(g=>g.id).filter(id=>!kept.includes(id)))];
+ const kept=s.order.filter((id,i)=>byId.has(id) && !isGeco(id) && s.order.indexOf(id)===i);
+ const added=ordered(config,new Set(config.groups.map(g=>g.id).filter(id=>!isGeco(id) && !kept.includes(id))));
+ const order=[...kept,...added,...config.groups.map(g=>g.id).filter(isGeco)];
  const videoOrder=Object.fromEntries(config.groups.map(g=>{const old=s.videoOrder?.[g.id], ids=g.videos.map(v=>v.id);
-   return [g.id, Array.isArray(old) && old.length===3 && ids.every(v=>old.includes(v)) ? old : shuffle(ids)];}));
+   return [g.id, !isGeco(g.id) && Array.isArray(old) && old.length===3 && ids.every(v=>old.includes(v)) ? old : videoIds(g)];}));
  const current=s.order[s.cursor], cursor=Math.max(0,order.indexOf(current));
  return {...s, snapshot:JSON.stringify(config), rater:typeof s.rater==='string'?s.rater:'', order, videoOrder, cursor,
    active:Number.isInteger(s.active)&&s.active>=0&&s.active<=2?s.active:0, metadata:s.metadata||{}};

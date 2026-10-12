@@ -26,4 +26,4 @@ JSON/CSV 可随时导出；未完成项为 null/空值，不会当成负面评�
 
 ## 边生成边标注
 
-标签按 study id 保存，不随 version 变化。新视频生成后重新运行 `make_study_config.py`，把新的 `study-config.js` 和视频提交上来即可：标注者刷新页面后，已标的标签、标注者名字和已看过的组顺序都保留，新组以随机顺序排在后面。第一次打开本版本时，会自动接上同一 study id 下最新 version 的旧标签。只要 study id 不变、已有组的 id 不改，就不会丢标签；换 study id 等于开一个新的标注任务。
+标签按 study id 保存，不随 version 变化。新视频生成后重新运行 `make_study_config.py`，把新的 `study-config.js` 和视频提交上来即可：标注者刷新页面后，已标的标签、标注者名字和已看过的组顺序都保留，新加的对比组按配置顺序（不打乱）接在后面，已有组的位置不变。GeCo 开发集的组（id 以 `geco__` 开头，原版 prompt、不做 prompt 对比）始终集中排在最后，按模型、运镜顺序排列，组内视频也不打乱，可以按需选择是否标注。第一次打开本版本时，会自动接上同一 study id 下最新 version 的旧标签。只要 study id 不变、已有组的 id 不改，就不会丢标签；换 study id 等于开一个新的标注任务。
