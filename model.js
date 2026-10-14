@@ -25,7 +25,8 @@ const videoIds = g => isGeco(g.id) ? g.videos.map(v=>v.id) : shuffle(g.videos.ma
 export function createSession(config) {
  const ids=config.groups.map(g=>g.id);
  return { schemaVersion, snapshot:JSON.stringify(config), id:crypto.randomUUID(), rater:'', createdAt:new Date().toISOString(), cursor:0, active:0,
- order:[...shuffle(ids.filter(id=>!isGeco(id))),...ids.filter(isGeco)], videoOrder:Object.fromEntries(config.groups.map(g=>[g.id,videoIds(g)])), labels:{}, metadata:{} };
+ // fixedOrder: groups in config order (a labelling queue); videos inside a group are still shuffled.
+ order:config.fixedOrder ? ids : [...shuffle(ids.filter(id=>!isGeco(id))),...ids.filter(isGeco)], videoOrder:Object.fromEntries(config.groups.map(g=>[g.id,videoIds(g)])), labels:{}, metadata:{} };
 }
 export const labelKey = (groupId,videoId) => JSON.stringify([groupId,videoId]);
 // Carry a session over to a newer config (groups added as generation progresses): labels, rater, submission id and

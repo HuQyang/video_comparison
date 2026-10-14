@@ -1,7 +1,9 @@
-import {config} from './study-config.js';
 import {validateConfig,createSession,validSession,mergeSession,labelKey,results,toCsv} from './model.js';
 import {schemaVersion,questions,details,completeLabel} from './schema.js';
 import {lang,setLang,t,qTitle,qHint,optText,detailTitle,tagText,studyTitle,applyStatic} from './i18n.js';
+// ?study=task16 loads study-task16.js, etc.; no parameter = the prompt comparison (study-config.js).
+const studyName=new URLSearchParams(location.search).get('study');
+const {config}=await import(studyName&&/^[a-z0-9-]+$/.test(studyName)?`./study-${studyName}.js`:'./study-config.js');
 const $=id=>document.getElementById(id);
 validateConfig(config);
 // One save slot per study id, independent of config.version, so labels survive groups being added.
